@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "geoecoai"
+version = "1.0.0"
+description = "Deep Learning-Based Multi-Temporal Remote Sensing Framework for Dynamic Geo-Ecosystem Assessment and Management"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [
+    {name = "GeoEcoAI Engineering Research Team", email = "research@geoecoai.internal"}
+]
+keywords = [
+    "remote-sensing",
+    "deep-learning",
+    "resnet50",
+    "unet",
+    "semantic-segmentation",
+    "change-detection",
+    "geo-ecosystem",
+    "landsat",
+    "second-dataset"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: GIS",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11"
+]
+
+[project.scripts]
+geoecoai = "app.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"

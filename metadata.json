@@ -1,0 +1,6 @@
+{
+  "name": "GeoEcoAI",
+  "description": "Deep Learning-Based Multi-Temporal Remote Sensing Analysis & Post-Classification Change Detection",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,117 @@
+# ==============================================================================
+# GeoEcoAI - Framework Configuration
+# Deep Learning-Based Multi-Temporal Remote Sensing Framework
+# ==============================================================================
+
+project:
+  name: "GeoEcoAI"
+  version: "1.0.0"
+  description: "Deep Learning-Based Multi-Temporal Remote Sensing Framework for Dynamic Geo-Ecosystem Assessment and Management"
+  author: "Final-Year Engineering Research Team"
+  seed: 42
+  device: "auto"  # "auto", "cuda", "cpu"
+  mixed_precision: false
+
+dataset:
+  name: "SECOND - SEmantic Change detectiON Dataset (Yang et al., IEEE TGRS 2021)"
+  raw_dir: "data/raw/semantic_change_yang"
+  processed_dir: "data/processed"
+  patches_dir: "data/patches"
+  splits_dir: "data/splits"
+  sensor_type: "Aerial Optical Sensor"
+  spatial_resolution_meters: 1.0  # Default GSD 0.5-3m, nominal 1.0m
+  image_format: "png"
+  dimensions: [512, 512, 3]
+  num_classes: 7  # 0: Unchanged/Background + 6 semantic categories
+  split_ratios:
+    train: 0.70
+    val: 0.15
+    test: 0.15
+
+preprocessing:
+  patch_size: 256
+  stride: 256
+  overlap: 0
+  normalization_method: "minmax"  # "minmax", "zscore", "imagenet"
+  radiometric_scaling: 1.0  # [0, 255] -> [0.0, 1.0]
+  cloud_masking_enabled: false
+  registration_check: true
+  multispectral_adaptation:
+    strategy: "conv1_expansion"  # "conv1_expansion", "rgb_projection", "band_selection"
+    target_channels: 3
+  augmentation:
+    enabled: true
+    horizontal_flip: true
+    vertical_flip: true
+    random_rotate90: true
+    brightness_contrast: false
+
+model:
+  architecture: "ResNet50-UNet"
+  encoder_backbone: "resnet50"
+  encoder_weights: "imagenet"
+  input_channels: 3
+  num_classes: 7
+  decoder_channels: [256, 128, 64, 32, 16]
+  use_batchnorm: true
+  dropout_rate: 0.2
+  activation: "relu"
+  output_activation: "softmax"
+
+training:
+  batch_size: 8
+  epochs: 50
+  learning_rate: 0.0001
+  optimizer: "adam"  # "adam", "adamw", "sgd"
+  weight_decay: 0.0001
+  loss: "combined_ce_dice"  # "categorical_crossentropy", "dice_loss", "combined_ce_dice", "focal_loss"
+  ce_weight: 0.5
+  dice_weight: 0.5
+  early_stopping_patience: 10
+  reduce_lr_patience: 5
+  reduce_lr_factor: 0.5
+  min_lr: 1e-6
+  checkpoint_metric: "val_mean_iou"
+  checkpoint_mode: "max"
+
+evaluation:
+  metrics:
+    - "accuracy"
+    - "precision"
+    - "recall"
+    - "f1_score"
+    - "iou"
+    - "dice_coefficient"
+  confusion_matrix: true
+  per_class_metrics: true
+
+change_detection:
+  method: "post_classification_comparison"  # Post-Classification Comparison (PCC)
+  ignore_background_transition: true
+  minimum_change_area_pixels: 4
+  confidence_threshold: 0.5
+
+decision_support:
+  thresholds:
+    forest_loss_warning_pct: 5.0      # Trigger warning if forest loss > 5%
+    forest_loss_critical_pct: 15.0    # Trigger critical if forest loss > 15%
+    urban_expansion_high_pct: 10.0    # Alert if urban expansion > 10%
+    water_depletion_warning_pct: 3.0  # Alert if water body decreases > 3%
+    agricultural_loss_pct: 8.0        # Alert if low vegetation / cropland loss > 8%
+  priority_zones:
+    - "Riparian Corridors"
+    - "Protected Forest Reserves"
+    - "Urban Peripheries"
+
+visualization:
+  theme: "scientific"
+  dpi: 300
+  cmap_name: "custom_second"
+  plot_format: "png"
+
+reporting:
+  institution: "Department of Computer Science and Engineering & Geospatial Research"
+  course: "Final Year Engineering Major Project"
+  author: "Final Year Student Researcher"
+  academic_year: "2025-2026"
+  output_dir: "outputs/reports"

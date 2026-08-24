@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>GeoEcoAI Research Report</title>
+<style>
+body { font-family: 'Segoe UI', system-ui, sans-serif; margin: 40px; color: #1E293B; background: #F8FAFC; }
+.card { background: white; padding: 30px; border-radius: 8px; border: 1px solid #E2E8F0; max-width: 900px; margin: 0 auto; }
+h1 { color: #1E3A8A; font-size: 24px; border-bottom: 2px solid #E2E8F0; padding-bottom: 12px; }
+h2 { color: #0F172A; font-size: 18px; margin-top: 24px; }
+table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+th, td { border: 1px solid #CBD5E1; padding: 8px 12px; text-align: left; font-size: 13px; }
+th { background: #1E293B; color: white; }
+.badge-warning { color: #B45309; background: #FEF3C7; padding: 2px 8px; border-radius: 4px; font-weight: bold; }
+.badge-high { color: #B91C1C; background: #FEE2E2; padding: 2px 8px; border-radius: 4px; font-weight: bold; }
+</style>
+</head>
+<body>
+<div class="card">
+<h1>GeoEcoAI: Multi-Temporal Remote Sensing Assessment Report</h1>
+<p><strong>Framework:</strong> Deep Learning ResNet-50 + U-Net Semantic Segmentation &amp; Post-Classification Comparison (PCC)</p>
+<p><strong>Dataset Benchmark:</strong> SECOND (Yang et al., IEEE TGRS 2021) | <strong>Date:</strong> 2026-08-21 09:11:29</p>
+
+<h2>1. Temporal Land Cover Area Comparison</h2>
+<table>
+<tr><th>Class</th><th>T1 Area (ha)</th><th>T2 Area (ha)</th><th>Net Change (ha)</th><th>Trend</th></tr>
+<tr><td>Water Bodies</td><td>0.18</td><td>0.19</td><td>+0.01</td><td>EXPANSION</td></tr><tr><td>Ground / Bare Soil</td><td>0.12</td><td>0.11</td><td>-0.01</td><td>REDUCTION</td></tr><tr><td>Low Vegetation / Agriculture</td><td>0.01</td><td>0.01</td><td>-0.00</td><td>REDUCTION</td></tr><tr><td>Tree / Forest Canopy</td><td>0.00</td><td>0.00</td><td>+0.00</td><td>EXPANSION</td></tr><tr><td>Building / Urban Infrastructure</td><td>0.07</td><td>0.07</td><td>+0.00</td><td>EXPANSION</td></tr><tr><td>Playground / Sports Ground</td><td>0.01</td><td>0.01</td><td>+0.00</td><td>EXPANSION</td></tr>
+</table>
+
+<h2>2. Environmental Observations</h2>
+<ul>
+<li><strong>[INFO] Urban & Infrastructure Expansion:</strong> An increase in the area classified as urban/built-up land was detected. This spatial trend indicates active infrastructure development or residential expansion. <em>(+0.00 ha (+0.40%) expansion)</em></li><li><strong>[INFO] Hydrological Surface Dynamics:</strong> An expansion in classified water body surface was detected. This may correspond to precipitation accumulation, reservoir filling, or seasonal inundation. <em>(+0.01 ha (+4.24%) expansion)</em></li><li><strong>[WARNING] Agricultural & Low Vegetation Dynamics:</strong> A reduction in classified agricultural/low vegetation area was detected. This observation indicates potential conversion to bare soil, harvesting cycles, or land conversion. <em>(0.00 ha (15.85%) reduction)</em></li>
+</ul>
+
+<h2>3. Decision Support Recommendations</h2>
+<ul>
+<li><strong>[LOW] Farmland Preservation & Soil Health Assessment:</strong> Agricultural Land & Soil Preservation - Cropland/low vegetation loss of 15.85% exceeds alert threshold (8.0%)</li>
+</ul>
+</div>
+</body>
+</html>

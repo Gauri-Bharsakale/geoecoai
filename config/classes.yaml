@@ -1,0 +1,110 @@
+# ==============================================================================
+# GeoEcoAI - Semantic Class Definitions (Yang et al. SECOND Dataset)
+# ==============================================================================
+# Verified mapping from "Asymmetric Siamese Networks for Semantic Change Detection
+# in High-Resolution Remote Sensing Images" (Yang et al., IEEE TGRS 2021)
+# ==============================================================================
+
+classes:
+  - id: 0
+    name: "unchanged_background"
+    display_name: "Unchanged / Background"
+    color_rgb: [0, 0, 0]
+    color_hex: "#1E1E1E"
+    environmental_category: "Background / Unclassified"
+    description: "Areas with no change or background pixels without primary categorization"
+
+  - id: 1
+    name: "water"
+    display_name: "Water Bodies"
+    color_rgb: [0, 0, 255]
+    color_hex: "#2563EB"
+    environmental_category: "Hydrosphere / Aquatic Resources"
+    description: "Rivers, reservoirs, lakes, canals, coastal waters, and retention ponds"
+
+  - id: 2
+    name: "ground"
+    display_name: "Ground / Bare Soil"
+    color_rgb: [128, 128, 128]
+    color_hex: "#94A3B8"
+    environmental_category: "Lithosphere / Impervious / Bare Ground"
+    description: "Non-vegetated ground surface, bare soil, construction sites, unpaved ground"
+
+  - id: 3
+    name: "low_vegetation"
+    display_name: "Low Vegetation / Agriculture"
+    color_rgb: [0, 255, 0]
+    color_hex: "#22C55E"
+    environmental_category: "Biosphere / Agro-Ecosystems & Grasslands"
+    description: "Agricultural fields, grasslands, lawns, scrublands, and herbaceous canopy"
+
+  - id: 4
+    name: "tree"
+    display_name: "Tree / Forest"
+    color_rgb: [0, 128, 0]
+    color_hex: "#15803D"
+    environmental_category: "Biosphere / Forest Canopy & Woodland"
+    description: "Woodlands, dense tree cover, agroforestry patches, and riparian forests"
+
+  - id: 5
+    name: "building"
+    display_name: "Building / Urban"
+    color_rgb: [255, 0, 0]
+    color_hex: "#DC2626"
+    environmental_category: "Anthroposphere / Built-up Infrastructure"
+    description: "Residential buildings, commercial complexes, factories, and urban structures"
+
+  - id: 6
+    name: "playground"
+    display_name: "Playground / Sports Ground"
+    color_rgb: [255, 255, 0]
+    color_hex: "#EAB308"
+    environmental_category: "Anthroposphere / Recreational Infrastructure"
+    description: "Stadiums, sports courts, paved recreation tracks, and athletic fields"
+
+# Semantic Change Categories (Combinations of from_class -> to_class)
+semantic_change_definitions:
+  total_possible_changes: 36
+  meaningful_ecological_transitions:
+    - code: "4_to_5"
+      from: 4
+      to: 5
+      name: "Deforestation for Urban Expansion"
+      severity: "CRITICAL"
+      category: "Ecological Degradation"
+    - code: "4_to_2"
+      from: 4
+      to: 2
+      name: "Tree Canopy Clearing to Bare Ground"
+      severity: "HIGH"
+      category: "Vegetation Loss"
+    - code: "3_to_5"
+      from: 3
+      to: 5
+      name: "Agricultural Land Conversion to Built-up"
+      severity: "HIGH"
+      category: "Urban Encroachment"
+    - code: "1_to_2"
+      from: 1
+      to: 2
+      name: "Water Body Desiccation / Siltation"
+      severity: "HIGH"
+      category: "Aquatic Ecosystem Stress"
+    - code: "2_to_4"
+      from: 2
+      to: 4
+      name: "Afforestation / Revegetation"
+      severity: "POSITIVE"
+      category: "Ecological Restoration"
+    - code: "2_to_3"
+      from: 2
+      to: 3
+      name: "Agricultural Development / Regreening"
+      severity: "POSITIVE"
+      category: "Vegetation Recovery"
+    - code: "2_to_5"
+      from: 2
+      to: 5
+      name: "Construction Completion on Bare Land"
+      severity: "MODERATE"
+      category: "Infrastructure Development"
