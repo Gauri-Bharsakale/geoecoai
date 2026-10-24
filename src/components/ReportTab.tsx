@@ -14,9 +14,11 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { ScenarioDataset, UserAnalysisResult } from '../types';
-import { SECOND_CLASSES, BENCHMARK_MODEL } from '../data/scenarios';
+import { SECOND_CLASSES } from '../data/scenarios';
+import { IMPROVED_MODEL } from '../data/modelExperiments';
 import { calculateSceneStatistics, generateAcademicEnvironmentalInsights } from '../utils/geoAnalysis';
 import { generateModelEvaluationPdf, generateTemporalChangePdf } from '../utils/pdfGenerator';
+import { fetchOrCalculateEvaluationMetrics, generateScenarioBase64Maps } from '../utils/evaluationMetrics';
 
 interface ReportTabProps {
   currentScenario: ScenarioDataset;
@@ -89,10 +91,24 @@ export const ReportTab: React.FC<ReportTabProps> = ({
           t1PredBase64: userResult.t1PredDataUrl,
           t2PredBase64: userResult.t2PredDataUrl,
           changeMapBase64: userResult.changeMapDataUrl,
+          t1ConfidenceBase64: userResult.t1ConfidenceDataUrl,
+          t2ConfidenceBase64: userResult.t2ConfidenceDataUrl,
+          highConfChangeBase64: userResult.highConfChangeDataUrl,
+          uncertainMapBase64: userResult.uncertainMapDataUrl,
+          caPccMapBase64: userResult.caPccMapDataUrl,
+          confidenceThreshold: userResult.confidenceThreshold || 0.8,
+          confidenceStats: userResult.confidenceStats,
+          confidencePccComparison: userResult.confidenceStats?.evaluationComparison,
+          evaluation: userResult.evaluation,
         });
         setPdfSuccessMessage('GeoEcoAI_User_Temporal_Analysis_Report.pdf generated successfully.');
       } else {
-        // Benchmark Scenario Report
+        // Benchmark Scenario Report with dynamic evaluation metrics & visual maps
+        const [evaluation, base64Maps] = await Promise.all([
+          fetchOrCalculateEvaluationMetrics(currentScenario),
+          generateScenarioBase64Maps(currentScenario),
+        ]);
+
         await generateTemporalChangePdf({
           title: currentScenario.title,
           sceneCode: currentScenario.sceneCode,
@@ -128,6 +144,19 @@ export const ReportTab: React.FC<ReportTabProps> = ({
             observation: o.observation,
             academicImplication: o.academicImplication,
           })),
+          t1ImageBase64: base64Maps.t1ImageBase64,
+          t2ImageBase64: base64Maps.t2ImageBase64,
+          t1PredBase64: base64Maps.t1PredBase64,
+          t2PredBase64: base64Maps.t2PredBase64,
+          changeMapBase64: base64Maps.changeMapBase64,
+          t1ConfidenceBase64: base64Maps.t1ConfidenceBase64,
+          t2ConfidenceBase64: base64Maps.t2ConfidenceBase64,
+          highConfChangeBase64: base64Maps.highConfChangeBase64,
+          uncertainMapBase64: base64Maps.uncertainMapBase64,
+          caPccMapBase64: base64Maps.caPccMapBase64,
+          confidenceThreshold: 0.8,
+          confidencePccComparison: evaluation.confidencePccComparison,
+          evaluation,
         });
         setPdfSuccessMessage(`GeoEcoAI_Temporal_Analysis_${currentScenario.sceneCode}.pdf generated successfully.`);
       }
@@ -140,8 +169,8 @@ export const ReportTab: React.FC<ReportTabProps> = ({
   };
 
   const handleDownloadMarkdown = () => {
-    const mdContent = `# GeoEcoAI: Deep Learning-Based Multi-Temporal Remote Sensing Analysis
-**Final-Year Academic Engineering Project Dossier**
+    const mdContent = `# Multi-Temporal Land Cover Classification & Change Detection Using Satellite Images
+**Academic Research & Evaluation Dossier**
 **Date:** ${reportDate}
 **Scene:** ${currentScenario.sceneCode} (${currentScenario.title})
 **Temporal Baseline (T1):** ${currentScenario.temporalBaseline}
@@ -150,7 +179,7 @@ export const ReportTab: React.FC<ReportTabProps> = ({
 ---
 
 ## 1. Project Objective
-To design and evaluate a multi-temporal remote sensing pipeline utilizing deep learning semantic segmentation (ResNet-50 + U-Net) and Post-Classification Comparison (PCC) for high-resolution land-cover classification and quantitative change detection.
+To design and evaluate an end-to-end multi-temporal remote sensing framework utilizing deep learning semantic segmentation (U-Net with ResNet-50 Encoder) and Post-Classification Comparison (PCC) for high-resolution land-cover classification and quantitative change detection.
 
 ## 2. Dataset Specifications
 - **Dataset:** Semantic Change Detection Dataset (SECOND) - Yang et al. (IEEE TGRS 2021)
@@ -165,13 +194,13 @@ To design and evaluate a multi-temporal remote sensing pipeline utilizing deep l
 - Batch formatting for GPU accelerated neural inference.
 
 ## 4. Model Architecture & Benchmark Performance
-- **Architecture:** U-Net with ResNet-50 Feature Extractor
-- **Backbone:** ResNet-50 (Pretrained on ImageNet)
+- **Architecture:** U-Net with ResNet-50 Encoder
+- **Backbone:** ResNet-50 (Pretrained on ImageNet, 5-stage feature extraction C1–C5)
 - **Decoder:** 5-Stage U-Net with Skip Connections and Bilinear Upsampling
 - **Loss Function:** Composite Categorical Cross-Entropy + Dice Loss
-- **Validation mIoU:** ${BENCHMARK_MODEL.mIoU}%
-- **F1 / Dice Score:** ${BENCHMARK_MODEL.f1Score}%
-- **Pixel Accuracy:** ${BENCHMARK_MODEL.accuracy}%
+- **Test mIoU:** ${IMPROVED_MODEL.mIoU}%
+- **Test Macro F1:** ${IMPROVED_MODEL.f1Score}%
+- **Test Pixel Accuracy:** ${IMPROVED_MODEL.accuracy}%
 
 ## 5. Post-Classification Comparison (PCC) Change Detection
 - **Methodology:** Direct pixel-by-pixel matrix comparison of classified maps M_T1(x, y) and M_T2(x, y).
@@ -319,11 +348,11 @@ The deep learning-based multi-temporal framework successfully identified and qua
         {/* Header Document Metadata */}
         <div className="border-b border-slate-800 pb-5">
           <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-mono text-cyan-400 print:text-blue-700">
-            <span>GeoEcoAI &middot; Academic Research Dossier</span>
+            <span>GeoEcoAI &middot; Research Dossier</span>
             <span>Date of Generation: {reportDate}</span>
           </div>
           <h1 className="text-xl md:text-2xl font-bold text-white print:text-black mt-2">
-            Deep Learning-Based Multi-Temporal Remote Sensing Analysis & Post-Classification Change Detection
+            Multi-Temporal Land Cover Classification & Change Detection Using Satellite Images
           </h1>
           <p className="text-xs text-slate-400 print:text-gray-600 mt-1">
             <strong>Study Target:</strong> {reportType === 'user' && userResult ? `User Image Inference (${userResult.t1Image.name} vs ${userResult.t2Image.name})` : `${currentScenario.sceneCode} (${currentScenario.title})`} &middot; <strong>Interval:</strong> {currentScenario.temporalBaseline} to {currentScenario.temporalTarget}
@@ -336,7 +365,7 @@ The deep learning-based multi-temporal framework successfully identified and qua
             1. Project Objective
           </h2>
           <p className="text-slate-300 print:text-gray-800">
-            This project investigates the application of deep convolutional neural networks for semantic segmentation and post-classification change detection on high-resolution multi-temporal aerial and satellite imagery. The goal is to establish a rigorous, explainable pipeline that inputs bi-temporal optical images, generates accurate 7-class semantic segmentation maps, and derives pixel-level quantitative land-cover transition statistics.
+            This project implements and evaluates an end-to-end deep learning framework for semantic segmentation and post-classification change detection on high-resolution multi-temporal aerial and satellite imagery. The system inputs bi-temporal optical images, produces accurate 7-class semantic segmentation maps via a U-Net with ResNet-50 encoder, and calculates pixel-level quantitative land-cover transitions.
           </p>
         </section>
 
@@ -373,20 +402,20 @@ The deep learning-based multi-temporal framework successfully identified and qua
             3. Methodology & Model Architecture
           </h2>
           <p className="text-slate-300 print:text-gray-800">
-            The semantic segmentation module employs a <strong>ResNet-50 + U-Net</strong> architecture. A pretrained ResNet-50 backbone extracts hierarchical multi-scale feature maps from 512 × 512 × 3 optical inputs. A 5-stage U-Net decoder with skip connections reconstructs high-resolution spatial feature representations to generate pixel-level classification maps.
+            The semantic segmentation module employs a <strong>U-Net with ResNet-50 Encoder</strong> architecture. A pretrained ResNet-50 backbone extracts hierarchical multi-scale feature maps from 512 × 512 × 3 optical inputs. A 5-stage U-Net decoder with skip connections reconstructs high-resolution spatial feature representations to generate pixel-level classification maps.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-[11px] bg-slate-950/70 print:bg-gray-100 p-3 rounded-xl border border-slate-800 print:border-gray-300">
             <div>
               <span className="text-slate-400 print:text-gray-600 block">Mean IoU (mIoU):</span>
-              <strong className="text-emerald-400 print:text-green-700">{BENCHMARK_MODEL.mIoU}%</strong>
+              <strong className="text-emerald-400 print:text-green-700">{IMPROVED_MODEL.mIoU}%</strong>
             </div>
             <div>
               <span className="text-slate-400 print:text-gray-600 block">F1 / Dice Score:</span>
-              <strong className="text-emerald-400 print:text-green-700">{BENCHMARK_MODEL.f1Score}%</strong>
+              <strong className="text-emerald-400 print:text-green-700">{IMPROVED_MODEL.f1Score}%</strong>
             </div>
             <div>
               <span className="text-slate-400 print:text-gray-600 block">Overall Pixel Accuracy:</span>
-              <strong className="text-emerald-400 print:text-green-700">{BENCHMARK_MODEL.accuracy}%</strong>
+              <strong className="text-emerald-400 print:text-green-700">{IMPROVED_MODEL.accuracy}%</strong>
             </div>
           </div>
         </section>

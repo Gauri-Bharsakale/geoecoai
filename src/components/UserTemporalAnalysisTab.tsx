@@ -26,11 +26,15 @@ import {
   validateAndLoadUserImage,
   checkGeographicalCompatibility,
   runUserImageInference,
+  recalculateUserResultWithThreshold,
   createSampleUserPair,
   MODEL_INPUT_SIZE,
 } from '../utils/userImageInference';
 import { generateTemporalChangePdf } from '../utils/pdfGenerator';
 import { SECOND_CLASSES } from '../data/scenarios';
+import { ModelPerformanceSection } from './ModelPerformanceSection';
+import { ConfidenceAwarePccSection } from './ConfidenceAwarePccSection';
+import { DEFAULT_CONFIDENCE_THRESHOLD } from '../utils/confidenceAwarePcc';
 
 interface UserTemporalAnalysisTabProps {
   onNavigateToTab?: (tab: TabType) => void;
@@ -175,6 +179,12 @@ export const UserTemporalAnalysisTab: React.FC<UserTemporalAnalysisTabProps> = (
     URL.revokeObjectURL(url);
   };
 
+  const handleThresholdChange = (newThreshold: number) => {
+    if (!userResult) return;
+    const updated = recalculateUserResultWithThreshold(userResult, newThreshold);
+    onSetUserResult(updated);
+  };
+
   const handleGeneratePdf = async () => {
     if (!userResult) return;
     setPdfGenerating(true);
@@ -214,6 +224,16 @@ export const UserTemporalAnalysisTab: React.FC<UserTemporalAnalysisTabProps> = (
         t1PredBase64: userResult.t1PredDataUrl,
         t2PredBase64: userResult.t2PredDataUrl,
         changeMapBase64: userResult.changeMapDataUrl,
+        // CA-PCC Maps & Metrics
+        t1ConfidenceBase64: userResult.t1ConfidenceDataUrl,
+        t2ConfidenceBase64: userResult.t2ConfidenceDataUrl,
+        highConfChangeBase64: userResult.highConfChangeDataUrl,
+        uncertainMapBase64: userResult.uncertainMapDataUrl,
+        caPccMapBase64: userResult.caPccMapDataUrl,
+        confidenceThreshold: userResult.confidenceThreshold || DEFAULT_CONFIDENCE_THRESHOLD,
+        confidenceStats: userResult.confidenceStats,
+        confidencePccComparison: userResult.confidenceStats?.evaluationComparison,
+        evaluation: userResult.evaluation,
       });
       setPdfSuccess(true);
     } catch (err) {
@@ -704,6 +724,37 @@ export const UserTemporalAnalysisTab: React.FC<UserTemporalAnalysisTabProps> = (
               </div>
             </div>
           </div>
+
+          {/* Confidence-Aware Post-Classification Comparison (CA-PCC) Section */}
+          <ConfidenceAwarePccSection
+            id="user-confidence-aware-pcc-section"
+            stats={userResult.confidenceStats}
+            currentThreshold={userResult.confidenceThreshold || DEFAULT_CONFIDENCE_THRESHOLD}
+            onThresholdChange={handleThresholdChange}
+            t1DataUrl={userResult.t1Image.dataUrl}
+            t2DataUrl={userResult.t2Image.dataUrl}
+            t1PredDataUrl={userResult.t1PredDataUrl}
+            t2PredDataUrl={userResult.t2PredDataUrl}
+            changeMapDataUrl={userResult.changeMapDataUrl}
+            t1ConfidenceDataUrl={userResult.t1ConfidenceDataUrl}
+            t2ConfidenceDataUrl={userResult.t2ConfidenceDataUrl}
+            highConfChangeDataUrl={userResult.highConfChangeDataUrl}
+            uncertainMapDataUrl={userResult.uncertainMapDataUrl}
+            caPccMapDataUrl={userResult.caPccMapDataUrl}
+            isUserAnalysis={true}
+            sampleSubtitle={`${userResult.t1Image.name} / ${userResult.t2Image.name}`}
+            evaluationComparison={userResult.confidenceStats?.evaluationComparison}
+          />
+
+          {/* Dedicated Model Performance & Evaluation Metrics Section */}
+          <ModelPerformanceSection
+            id="user-model-performance-section"
+            evaluation={userResult.evaluation}
+            onExportPdf={handleGeneratePdf}
+            isExportingPdf={pdfGenerating}
+            pdfDownloaded={pdfSuccess}
+            sampleSubtitle={`${userResult.t1Image.name} / ${userResult.t2Image.name}`}
+          />
 
           {/* 4. Tables: Class-Wise Comparison & Major Transitions */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">

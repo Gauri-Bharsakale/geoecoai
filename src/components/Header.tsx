@@ -50,15 +50,15 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-lg md:text-xl font-bold tracking-tight text-white">
-                GeoEcoAI
+              <h1 className="text-base md:text-lg font-bold tracking-tight text-white">
+                Multi-Temporal Land Cover Classification & Change Detection Using Satellite Images
               </h1>
-              <span className="text-xs px-2 py-0.5 rounded-md bg-cyan-950/80 border border-cyan-500/40 text-cyan-300 font-medium">
-                Final Year Engineering Project
+              <span className="text-[11px] px-2 py-0.5 rounded-md bg-cyan-950/80 border border-cyan-500/40 text-cyan-300 font-semibold">
+                GeoEcoAI Platform
               </span>
             </div>
             <p className="text-xs text-slate-300 font-medium mt-0.5">
-              Deep Learning-Based Multi-Temporal Remote Sensing Analysis
+              Deep Learning Semantic Segmentation & Post-Classification Comparison (PCC)
             </p>
           </div>
         </div>
@@ -77,7 +77,7 @@ export const Header: React.FC<HeaderProps> = ({
 
           <div className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-950/80 border border-slate-800 text-xs text-slate-300">
             <span className="text-slate-400 font-medium">Model:</span>
-            <span className="font-semibold text-emerald-400">ResNet-50 + U-Net</span>
+            <span className="font-semibold text-emerald-400">U-Net + ResNet-50</span>
           </div>
 
           <button
